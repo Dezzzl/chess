@@ -1,5 +1,10 @@
 package main.java;
 import main.java.piece.Piece;
+
+import java.util.Set;
+
+import static java.util.Collections.emptySet;
+
 public class BoardConsoleRenderer {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_WHITE_PIECE_COLOR = "\u001B[97m";
@@ -11,16 +16,22 @@ public class BoardConsoleRenderer {
 
     public static final String ANSI_HIGHLIGHTED_SQUARE_BACKGROUND = "\u001B[45m";
 
-    public void render(Board board) {
+    public void render(Board board, Piece pieceToMove) {
+        Set<Coordinates> availableMoveSquares = emptySet();
+        if(pieceToMove!=null){
+            availableMoveSquares=pieceToMove.getAvailableMoveSquares(board);
+        }
         for (int rank = 8; rank >= 1; rank--) {
             String line="";
             for (File file : File.values()) {
                 Coordinates coordinates=new Coordinates(file, rank);
+                boolean isHighlight = availableMoveSquares.contains(coordinates);
+
                 if(board.isSquareEmpty(coordinates)) {
-                    line += getSpriteForEmptySquare(coordinates);
+                    line += getSpriteForEmptySquare(coordinates, isHighlight);
                 }
                 else{
-                    line+=getPiecesSprite(board.getPiece(coordinates));
+                    line+=getPiecesSprite(board.getPiece(coordinates), isHighlight);
                 }
             }
             line+=ANSI_RESET;
@@ -28,7 +39,11 @@ public class BoardConsoleRenderer {
         }
     }
 
-    private String colorizeSprites(String sprite, Color pieceColor, boolean isSquareDark ){
+
+    public void render(Board board){
+        render(board, null);
+    }
+    private String colorizeSprites(String sprite, Color pieceColor, boolean isSquareDark, boolean isHighlighted ){
         String result=sprite;
         if(pieceColor==Color.WHITE){
             result=ANSI_WHITE_PIECE_COLOR+result;
@@ -36,7 +51,10 @@ public class BoardConsoleRenderer {
         else{
             result=ANSI_BLACK_PIECE_COLOR+ result;
         }
-        if(isSquareDark){
+        if(isHighlighted){
+            result=ANSI_HIGHLIGHTED_SQUARE_BACKGROUND+result;
+        }
+        else if(isSquareDark){
             result=ANSI_BLACK_SQUARE_BACKGROUND+result;
         }
         else{
@@ -44,11 +62,11 @@ public class BoardConsoleRenderer {
         }
         return result;
     }
-    private String getPiecesSprite(Piece piece){
-        return colorizeSprites(" "+selectUnicodeSpriteForPieces(piece)+" ",piece.color, Board.isSquareDark(piece.coordinates) );
+    private String getPiecesSprite(Piece piece,  boolean isHighlight){
+        return colorizeSprites(" "+selectUnicodeSpriteForPieces(piece)+" ",piece.color, Board.isSquareDark(piece.coordinates) ,  isHighlight);
     }
-    private String getSpriteForEmptySquare(Coordinates coordinates){
-        return colorizeSprites("   ",Color.WHITE, Board.isSquareDark(coordinates) );
+    private String getSpriteForEmptySquare(Coordinates coordinates, boolean isHighlight){
+        return colorizeSprites("   ",Color.WHITE, Board.isSquareDark(coordinates) , isHighlight);
     }
     private String selectUnicodeSpriteForPieces(Piece piece) {
         switch (piece.getClass().getSimpleName()) {

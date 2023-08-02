@@ -20,6 +20,8 @@ public class Game {
          );
          Piece piece =board.getPiece(sourceCoordinates);
          Set<Coordinates> availableMoveSquares = piece.getAvailableMoveSquares(board);
+
+         renderer.render(board, piece);
          Coordinates targetCoordinates = InputCoordinates.inputAvailableSquare(availableMoveSquares);
          board.movePiece(sourceCoordinates, targetCoordinates);
          isWhiteToMove=!isWhiteToMove;
