@@ -1,13 +1,16 @@
 package main.java;
 
+import main.java.board.Board;
+import main.java.board.BoardFactory;
+
 public class Main {
     public static void main(String[] args){
 //      Board board=new Board();
 //      board.setupDefaultPiecesPositions();
-      Board board=  (new BoardFactory()).fromFEN("8/4b1P1/1p6/8/1R3P2/8/5Q2/8 w - - 0 1");
+      Board board=  (new BoardFactory()).fromFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         BoardConsoleRenderer renderer =new BoardConsoleRenderer();
 //
       Game game=new Game(board);
-      game.gemeLoop();
+      game.gameLoop();
     }
 }

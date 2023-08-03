@@ -1,11 +1,15 @@
-package main.java;
+package main.java.board;
 
-import main.java.piece.Pawn;
+import main.java.Coordinates;
+import main.java.File;
+import main.java.Main;
+import main.java.PieceFactory;
+import main.java.board.Board;
 
 public class BoardFactory {
     private PieceFactory pieceFactory=new PieceFactory();
     public Board fromFEN(String fen){
-        Board board =new Board();
+        Board board =new Board(fen);
         String[] parts = fen.split(" ");
         String piecePositions=parts[0];
         String[] fenRows = piecePositions.split("/");
@@ -30,5 +34,11 @@ public class BoardFactory {
 
     return board;
     }
-
+public  Board copy(Board sourse){
+        Board clone=fromFEN(sourse.startingFen);
+        for(Move move: sourse.moves){
+            clone.makeMove(move);
+        }
+        return  clone;
+}
 }

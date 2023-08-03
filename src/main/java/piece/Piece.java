@@ -1,6 +1,6 @@
 package main.java.piece;
 
-import main.java.Board;
+import main.java.board.Board;
 import main.java.Color;
 import main.java.Coordinates;
 
@@ -34,5 +34,30 @@ protected  boolean isSquareAvailableForMove(Coordinates coordinates, Board board
 
 
     protected abstract Set<CoordinateShift>getPieceMove();
+
+    public Set<Coordinates> getAttackedSquares(Board board) {
+
+        Set<CoordinateShift> pieceAttacks = getPieceAttacks();
+      Set<Coordinates>  result=new HashSet<>();
+        for (CoordinateShift pieceAttack : pieceAttacks) {
+            if(coordinates.canShift(pieceAttack)){
+                Coordinates shiftedCoordinates=coordinates.shift(pieceAttack);
+
+                if(isSquareAvailableForAttack(shiftedCoordinates, board)){
+                    result.add(shiftedCoordinates);
+                }
+            }
+        }
+        return  result;
+
+    }
+
+    protected boolean isSquareAvailableForAttack(Coordinates coordinates, Board board) {
+        return  true;
+    }
+
+    protected  Set<CoordinateShift> getPieceAttacks() {
+        return getPieceMove();
+    }
 }
 

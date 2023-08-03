@@ -1,4 +1,7 @@
-package main.java;
+package main.java.board;
+
+import main.java.Coordinates;
+import main.java.File;
 
 import java.util.ArrayList;
 import java.util.List;

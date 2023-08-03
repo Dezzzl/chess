@@ -1,30 +1,45 @@
 package main.java;
 
-import main.java.piece.Piece;
+import main.java.board.Board;
+import main.java.board.Move;
 
-import java.util.Set;
+import java.util.Collections;
+import java.util.List;
 
 public class Game {
     private final Board board;
+
+    private  final List<GameStateChecker>checkers= List.of(
+            new StalemateGameStateChecker(),
+            new CheckmateGameStateChecker()
+    );
     private BoardConsoleRenderer renderer=new BoardConsoleRenderer();
     public Game(Board board) {
         this.board = board;
     }
 
-    public void gemeLoop(){
-        boolean isWhiteToMove=true;
-     while(true){
+    public void gameLoop(){
+        Color colorToMove=Color.WHITE;
+        GameState state=determineGameState(board, colorToMove);
+     while(state==GameState.ONGOING){
          renderer.render(board);
-         Coordinates sourceCoordinates= InputCoordinates.inputPieceCoordinatesForColor(
-                 isWhiteToMove?Color.WHITE:Color.BLACK, board
-         );
-         Piece piece =board.getPiece(sourceCoordinates);
-         Set<Coordinates> availableMoveSquares = piece.getAvailableMoveSquares(board);
-
-         renderer.render(board, piece);
-         Coordinates targetCoordinates = InputCoordinates.inputAvailableSquare(availableMoveSquares);
-         board.movePiece(sourceCoordinates, targetCoordinates);
-         isWhiteToMove=!isWhiteToMove;
+         Move move=InputCoordinates.inputMove(board, colorToMove, renderer);
+         board.makeMove(move);
+         colorToMove=colorToMove.opposite();
+        state= determineGameState(board, colorToMove);
      }
+        renderer.render(board);
+        System.out.println("Game ended with state ="+ state);
+    }
+
+    private GameState determineGameState(Board board, Color color) {
+        for(GameStateChecker checker: checkers){
+           GameState state= checker.check(board, color);
+
+           if(state!=GameState.ONGOING){
+               return state;
+           }
+        }
+        return  GameState.ONGOING;
     }
 }

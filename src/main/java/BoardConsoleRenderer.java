@@ -1,4 +1,5 @@
 package main.java;
+import main.java.board.Board;
 import main.java.piece.Piece;
 
 import java.util.Set;
